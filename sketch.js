@@ -8,9 +8,6 @@ var ground, invisibleImg, groundImage
 
 var spaceship, spaceshipImg, spaceshipGroup
 
-var ghost, ghostImg
-
-var scream, screamSound
 
 var gameState = "play"
 
@@ -20,8 +17,6 @@ function preload(){
  battleImg = loadImage("back.jpg")
  groundImage = loadImage("ground2.png");
  spaceshipImg = loadImage("Spaceship.png")
- ghostImg = loadImage("scare.jpg")
- screamSound = loadSound("scream.mp3")
 }
 
 function setup() {
@@ -38,10 +33,6 @@ function setup() {
   ground.addImage("ground",groundImage);
   ground.x = ground.width /2;
 
-  ghost = createSprite(300,300)
-  ghost.addImage("ghost",ghostImg)
-  ghost.scale = 0.4
-
   alienGroup = createGroup();
   spaceshipGroup = createGroup();
 
@@ -53,8 +44,6 @@ function draw() {
 
   if(gameState === "play"){
     
-    ghost.visible = false
-
     if(keyDown("space")&& halo.y >= 400) {
         halo.velocityY = -17;
     }
@@ -71,27 +60,24 @@ function draw() {
 
     if(alienGroup.isTouching(halo)){
       gameState = "end";
-      halo.velocityY = 0
-      halo.velocityX = 0
-      alienGroup.setLifetimeEach(0);
-      alienGroup.setVelocityXEach(0); 
-      screamSound.play()
-      ghost.visible = true 
+      // halo.velocityY = 0
+      // halo.velocityX = 0
+      // alienGroup.setLifetimeEach(0);
+      // alienGroup.setVelocityXEach(0);  
+      // spaceshipGroup.setVelocityXEach(0);
     }
 
-    else if (gameState === "end") {
+    if(gameState === "end") {
       halo.velocityY = 0
       halo.velocityX = 0
-      ghost.visible = true
-      scream.play();
-      alienGroup.setLifetimeEach(0);
-    
+      alienGroup.setLifetimeEach(-1);
       alienGroup.setVelocityXEach(0);  
+      spaceshipGroup.setLifetimeEach(-1);
+      spaceshipGroup.setVelocityXEach(0);
     } 
 
     halo.collide(ground);
-
-    }
+  }
 
  ground.visible = false
 
@@ -121,7 +107,9 @@ function spawnship() {
       spaceship.addImage("spaceship",spaceshipImg);
       spaceship.velocityX = -3;
       spaceship.lifetime = 400;
-      spaceship.scale = 0.3;
+      spaceship.scale = 0.2;
+      spaceship.depth = halo.depth;
+      halo.depth = spaceship.depth + 1;
       spaceshipGroup.add(spaceship);
      }
     
